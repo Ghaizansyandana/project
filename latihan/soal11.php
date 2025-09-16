@@ -12,52 +12,67 @@ class penggajian
     $this->status_kk = $f;
   }
 
-  public function tunjanganjabatan()
-  {
-    if ($this->jabatan == "manager") {
-      return $this->gp * 0.2;
-    } elseif ($this->jabatan == "supervisor" || $this->jabatan == "staff") {
-      return $this->gp * 0.15;
-    } else {
-      return 0;
+    public function tunjanganjabatan()
+    {
+
+      $jabatan = $this->jabatan;
+
+      if ($this->jabatan == "manager") {
+        return $this->gp * 0.2;
+      } elseif ($this->jabatan == "supervisor") {
+        return $this->gp * 0.15;
+      } elseif ($this->jabatan == "staff") {
+        return $this->gp * 0.15;
+      } else {
+        return 0;
+      }
     }
-  }
+    
+    public function tunjangantransport()
+    {
 
-  public function tunjangantransport()
-  {
-    // Tunjangan transport hanya untuk karyawan tetap
-    if ($this->status_k == "tetap") {
-      return 500000;
-    } else {
-      return 0;
+      $status = $this->status_k;
+      $this->tk= 0;
+      if ($this->status == "tetap") {
+        return $this->tk ;
+      } else  {
+        return $this->tk ;
+      }
+      return $this->tk;
     }
-  }
+    
+    public function tunjanganmenikah()
+    {
+      $statuskk   = $this->status_kk;
+      $this->tm = 0;
+      if ($this->status == "menikah") {
+          return $this->tm  ;
+      } else {
+          return $this->tm;
+      }
+      return $this->tm;
 
-  public function tunjanganmenikah()
-  {
-    // Tunjangan menikah hanya untuk yang status_kk == "menikah"
-    if ($this->status_kk == "menikah") {
-      return 1000000;
-    } else {
-      return 0;
     }
-  }
 
-  public function gajikotor()
-  {
-    return $this->gp + $this->tunjanganjabatan() + $this->tunjanganmenikah() + $this->tunjangantransport();
-  }
 
-  public function pajak()
-  {
-    return $this->gajikotor() * 0.05;
-  }
-
-  public function gajibersih()
-  {
-    return $this->gajikotor() - $this->pajak();
-  }
-}
+    public function gajikotor()
+    {
+     $gajikotor = $this->gp + $this->tunjanganjabatan() + $this->tunjanganmenikah() + $this->tunjangantransport();
+     return $gajikotor;
+    }
+    
+    public function pajak()
+    {
+     $pajak = $this->gajikotor() * 0.05;
+     return $pajak;
+    }
+    
+    public function gajibersih()
+    {
+     $gajibersih = $this->gajikotor() - $this->pajak();
+     return $gajibersih;
+    }
+  }  
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -87,49 +102,46 @@ class penggajian
       <select name="jabatan" id="">
         <option value="manager">Manager</option>
         <option value="supervisor">Supervisor</option>
-        <option value="staff">Staff</option>
-        <option value="karyawan">Karyawan</option> 
+        <option value="staff">staff</option>
+        <option value="karyawan">karyawan</option> 
       </select>
-      <br>
-      <label for="">Status menikah</label>
-      <select name="status_kk" id="">
-        <option value="menikah">Menikah</option>
-        <option value="belum menikah">Belum menikah</option> 
-      </select>
-      <br>
-      <button type="submit">Simpan</button>
     </form>
+    <br>
+      <label for="">Jabatan</label>
+    <select name="jabatan" id="">
+        <option value="manager">Menikah</option>
+        <option value="supervisor">Belum menikah</option> 
+      </select>
+    </form>
+    <br>
+    <button type="submit">simpan</button>
 <?php
-$gaji = null;
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
-  $a = isset($_POST['nama']) ? $_POST['nama'] : '';
-  $b = isset($_POST['no_id']) ? $_POST['no_id'] : '';
-  $c = isset($_POST['gp']) ? (int)$_POST['gp'] : 0;
-  $d = isset($_POST['jabatan']) ? $_POST['jabatan'] : '';
-  $e = isset($_POST['status']) ? $_POST['status'] : '';
-  $f = isset($_POST['status_kk']) ? $_POST['status_kk'] : '';
+  $a = $_POST['nama'];
+  $b = $_POST['no_id'];
+  $c = $_POST['gp'];
+  $d = $_POST['jabatan'];
+  $e = $_POST['status'];
+  $f = $_POST['status_kk'];
 
   $gaji = new penggajian($a, $b, $c, $d, $e, $f);
 }
 ?>
 
-<?php if ($gaji !== null) : ?>
 <table>
+  <th>Nama</th>
+  <th>No_id</th>
+  <th>Status karyawan</th>
+  <th>Gaji pokok</th>
+  <th>Jabatan</th>
+  <th>Status menikah</th>
   <tr>
-    <th>Nama</th>
-    <th>No_id</th>
-    <th>Status karyawan</th>
-    <th>Gaji pokok</th>
-    <th>Jabatan</th>
-    <th>Status menikah</th>
-  </tr>
-  <tr>
-    <td><?php echo htmlspecialchars($gaji->nama); ?></td>
-    <td><?php echo htmlspecialchars($gaji->no_id); ?></td>
-    <td><?php echo htmlspecialchars($gaji->status_k); ?></td>
+    <td><?php echo $gaji->nama; ?></td>
+    <td><?php echo $gaji->no_id; ?></td>
+    <td><?php echo $gaji->status_k; ?></td>
     <td><?php echo number_format($gaji->gp, 0, ',', '.'); ?></td>
-    <td><?php echo htmlspecialchars($gaji->jabatan); ?></td>
-    <td><?php echo htmlspecialchars($gaji->status_kk); ?></td>
+    <td><?php echo $gaji->jabatan; ?></td>
+    <td><?php echo $gaji->status_kk; ?></td>
   </tr>
   <tr>
     <th>Tunjangan jabatan</th>
@@ -167,8 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
       Rp.<?php echo number_format($gaji->gajibersih(), 0, ',', '.'); ?>    
     </td>
   </tr>
-</table>
-<?php endif; ?>
+  
 </table>
 
 </body>
